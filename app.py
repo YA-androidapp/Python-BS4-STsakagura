@@ -14,7 +14,7 @@ import urllib.request
 
 def get_baseurl():
     config = configparser.ConfigParser()
-    config.read('example.ini')
+    config.read('urls.ini')
     config.sections()
     if 'urls' in config:
         return config['urls']['pref_index']
@@ -22,15 +22,33 @@ def get_baseurl():
         return ''
 
 
-def main(url):
+def get_pref_index(url):
+    print('get_pref_index({})'.format(url))
     if url and url.startswith('http'):
         req = urllib.request.Request(url)
         response = urllib.request.urlopen(req)
         html = response.read()
-        print(html)
+        # print(html)
         soup = BeautifulSoup(html, 'lxml')
+        # print(soup.prettify())
+        ul = soup.find_all(class_='sakayagura-list')
+        if 1 == len(ul):
+            pref_links = ul[0].select('li > a')
+            pref_urls = [i.get('href') for i in pref_links]
+            return pref_urls
+    return []
+
+
+def get_kura_index(url):
+    # TODO
+    pass
 
 
 if __name__ == '__main__':
     base_url = get_baseurl()
-    main(base_url)
+    print(base_url)
+    pref_urls = get_pref_index(base_url)
+    kura_all_urls = []
+    for pref_url in pref_urls:
+        kura_pref_urls = get_kura_index(pref_url)
+        kura_all_urls.append()

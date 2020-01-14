@@ -40,7 +40,10 @@ def get_pref_index(url):
 
 
 def get_kura_index(url):
+    url = url.replace('/./', '/')
+    print('get_kura_index({})'.format(url))
     # TODO
+    # <table class="sakagura-list"><tbody><tr><td><span class="main"><a href="https://">
     pass
 
 
@@ -51,4 +54,4 @@ if __name__ == '__main__':
     kura_all_urls = []
     for pref_url in pref_urls:
         kura_pref_urls = get_kura_index(pref_url)
-        kura_all_urls.append()
+        kura_all_urls.append(kura_pref_urls)

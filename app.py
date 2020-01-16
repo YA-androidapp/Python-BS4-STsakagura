@@ -13,6 +13,9 @@ import urllib.request
 from const import CONST_PREF_URLS, CONST_KURA_ALL_URLS
 
 
+CHECK_URL_LIST = False
+
+
 def get_baseurl():
     config = configparser.ConfigParser()
     config.read('urls.ini')
@@ -59,7 +62,7 @@ def get_kura_index(url):
 
 
 def get_kura_all_urls(pref_urls):
-    print('get_kura_all_urls({})'.format(pref_urls))
+    print('get_kura_all_urls({})'.format(len(pref_urls)))
     kura_all_urls = []
     for pref_url in pref_urls:
         kura_pref_urls = get_kura_index(pref_url)
@@ -79,22 +82,36 @@ def get_kura_info(kura_url):
         # print(soup.prettify())
         table = soup.find_all(class_='sakagura-table')
         if 1 == len(table):
-            trs = table[0].find_all('tr')
             kura_info = {
                 'url': kura_url,
             }
-            # TODO
+
+            trs = table[0].find_all('tr')
             for tr in trs:
-                print(tr)
                 tr_key = tr.th.string
-                tr_val = ((tr.find_all('td'))[0]).text
-                kura_info[tr_key] = tr_val
-            print('kura_info: {}'.format(kura_info))
+                td = (tr.find_all('td'))[0]
+
+                tr_val = ''
+                try:
+                    spans = td.find_all('span')
+                    if len(spans) > 0:
+                        tr_val = spans[0].string
+                    else:
+                        maps = td.find_all(class_='event_google_map')
+                        if len(maps) > 0:
+                            tr_val = maps[0].iframe.get('src')
+                        else:
+                            tr_val = td.string
+
+                    kura_info[tr_key] = tr_val
+                except Exception as e:
+                    print(e)
             return kura_info
     return {}
 
 
 def get_kura_all_infos(kura_all_urls):
+    print('get_kura_all_infos({})'.format(len(kura_all_urls)))
     kura_all_infos = []
     for kura_url in kura_all_urls:
         kura_info = get_kura_info(kura_url)
@@ -104,13 +121,16 @@ def get_kura_all_infos(kura_all_urls):
 
 if __name__ == '__main__':
     base_url = get_baseurl()
-    # print(base_url)
+    print('base_url: {}'.format(base_url))
 
-    # アクセス数抑制のため初回のみ実行して定数化した
-    # # pref_urls = get_pref_index(base_url)
-    # # kura_all_urls = get_kura_all_urls(pref_urls)
-    pref_urls = CONST_PREF_URLS
-    kura_all_urls = CONST_KURA_ALL_URLS
-    # print(kura_all_urls)
+    print('CHECK_URL_LIST: {}'.format(CHECK_URL_LIST))
+    if CHECK_URL_LIST:
+        pref_urls = get_pref_index(base_url)
+        kura_all_urls = get_kura_all_urls(pref_urls)
+    else:
+        # アクセス数抑制のため定数化
+        pref_urls = CONST_PREF_URLS
+        kura_all_urls = CONST_KURA_ALL_URLS
 
     kura_all_infos = get_kura_all_infos(kura_all_urls)
+    # print(kura_all_infos)

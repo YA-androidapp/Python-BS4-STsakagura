@@ -123,11 +123,15 @@ def get_kura_all_infos(kura_all_urls):
 
 
 def write_kura_all_infos(kura_all_infos):
+    sorted_kura_all_infos = (sorted(kura_all_infos, key=len))
+    for s in sorted_kura_all_infos:
+        print(len(s), s)
+
     os.makedirs(DATA_DIR, exist_ok=True)
     with open(os.path.join(DATA_DIR, 'kura_all_infos.csv'), 'w', encoding='utf_8', newline='') as tsvfile:
         spamwriter = csv.DictWriter(
             tsvfile,
-            kura_all_infos[11].keys(),  # TODO
+            sorted_kura_all_infos[len(sorted_kura_all_infos)-1].keys(),  # TODO
             delimiter='\t',
             quoting=csv.QUOTE_ALL
         )

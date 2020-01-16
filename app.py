@@ -8,12 +8,15 @@
 #  $ pip install lxml
 
 from bs4 import BeautifulSoup
-import configparser
-import urllib.request
 from const import CONST_PREF_URLS, CONST_KURA_ALL_URLS
+import configparser
+import csv
+import os
+import urllib.request
 
 
 CHECK_URL_LIST = False
+DATA_DIR = 'data'
 
 
 def get_baseurl():
@@ -119,6 +122,19 @@ def get_kura_all_infos(kura_all_urls):
     return kura_all_infos
 
 
+def write_kura_all_infos(kura_all_infos):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    with open(os.path.join(DATA_DIR, 'kura_all_infos.csv'), 'w', encoding='utf_8', newline='') as tsvfile:
+        spamwriter = csv.DictWriter(
+            tsvfile,
+            kura_all_infos[11].keys(),  # TODO
+            delimiter='\t',
+            quoting=csv.QUOTE_ALL
+        )
+        spamwriter.writeheader()
+        spamwriter.writerows(kura_all_infos)
+
+
 if __name__ == '__main__':
     base_url = get_baseurl()
     print('base_url: {}'.format(base_url))
@@ -129,8 +145,9 @@ if __name__ == '__main__':
         kura_all_urls = get_kura_all_urls(pref_urls)
     else:
         # アクセス数抑制のため定数化
-        pref_urls = CONST_PREF_URLS
+        # pref_urls = CONST_PREF_URLS
         kura_all_urls = CONST_KURA_ALL_URLS
 
     kura_all_infos = get_kura_all_infos(kura_all_urls)
     # print(kura_all_infos)
+    write_kura_all_infos(kura_all_infos)

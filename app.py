@@ -8,14 +8,14 @@
 #  $ pip install lxml
 
 from bs4 import BeautifulSoup
-from const import CONST_PREF_URLS, CONST_KURA_ALL_URLS
+#from const import CONST_PREF_URLS, CONST_KURA_ALL_URLS
 import configparser
 import csv
 import os
 import urllib.request
 
 
-CHECK_URL_LIST = False
+CHECK_URL_LIST = True
 DATA_DIR = 'data'
 
 
@@ -150,7 +150,8 @@ if __name__ == '__main__':
     else:
         # アクセス数抑制のため定数化
         # pref_urls = CONST_PREF_URLS
-        kura_all_urls = CONST_KURA_ALL_URLS
+        # kura_all_urls = CONST_KURA_ALL_URLS
+        pass
 
     kura_all_infos = get_kura_all_infos(kura_all_urls)
     # print(kura_all_infos)
